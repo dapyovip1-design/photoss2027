@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Instagram Photos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--card:#141414;--line:#262626;--ac:#8D36FF;--tx:#fff;--mut:#a8a8a8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--ac);color:#000}
+header h1{flex:1;margin:0;font-size:18px;text-align:center}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.ib{width:40px;height:40px;font-size:22px;border-radius:50%}
+.ib:focus-visible,.card:focus-visible,.nav a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+main{max-width:900px;margin:auto}
+.gal{padding:12px}
+.hero{position:relative;height:52vw;max-height:340px;background:#111 center 28%/cover;display:flex;flex-direction:column;justify-content:flex-end;padding:18px 20px;background-image:linear-gradient(135deg,#8D36FF,#1b0a3d)}
+.hero h2{margin:0;font-size:32px;font-weight:400}.hero p{margin:0;color:#ddd;font-size:19px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 12px 24px}
+.tile{position:relative;aspect-ratio:1/0.76;border-radius:22px;overflow:hidden;padding:0;background:linear-gradient(#1c1c1c,#050505);text-align:start}
+.tile img{object-position:center 30%;position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tile:after{content:"";position:absolute;inset:0;background:linear-gradient(#0000 45%,#000c)}
+.tile span{position:absolute;inset-inline:12px;bottom:10px;z-index:1;font-weight:700;font-size:17px;line-height:1.3}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,1fr)}}
+.grid button{padding:0;border-radius:12px;overflow:hidden;aspect-ratio:3/4;background:var(--card)}
+.grid img{width:100%;height:100%;object-fit:cover;display:block}
+.scrim{position:fixed;inset:0;background:#0009;opacity:0;pointer-events:none;transition:.2s;z-index:8}
+.nav{position:fixed;top:0;bottom:0;inset-inline-start:0;width:270px;max-width:80%;background:#0b0b0b;border-inline-end:1px solid var(--line);transform:translateX(100%);transition:.25s;z-index:9;padding:20px 0}
+[dir=ltr] .nav{transform:translateX(-100%)}
+body.open .nav{transform:none}body.open .scrim{opacity:1;pointer-events:auto}
+.nav h3{margin:0 18px 14px;font-size:18px}
+.nav a{display:block;padding:13px 18px;color:var(--tx);text-decoration:none;border-inline-start:4px solid transparent}
+.nav a.on{background:#1b1030;border-color:var(--ac)}
+.nav a.ig{display:flex;align-items:center;gap:12px;margin-top:10px;border-top:1px solid var(--line);padding-top:16px;font-weight:700}
+.nav a.ig svg{flex:none;color:var(--ac)}
+#lb .cnt{direction:ltr}
+[dir=ltr] #lb .p{right:auto;left:8px}[dir=ltr] #lb .n{left:auto;right:8px}
+#lg{position:fixed;inset:0;background:#000b;z-index:25;display:none;align-items:center;justify-content:center;padding:16px}
+#lg.show{display:flex}
+#lg .box{width:100%;max-width:440px;max-height:82vh;display:flex;flex-direction:column;background:#111;border:1px solid var(--line);border-radius:22px;overflow:hidden}
+#lg .lh{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid var(--line);font-size:18px}
+#lg .lgrid{overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
+#lg .lgrid button{padding:12px 8px;border-radius:12px;background:var(--card);border:2px solid transparent;font-weight:700}
+#lg .lgrid button.on{border-color:var(--ac);background:#1b1030}
+#lg .lgrid button:focus-visible{outline:2px solid #fff}
+#lb{position:fixed;inset:0;background:#000;z-index:20;display:none;flex-direction:column}
+#lb.show{display:flex}
+#lb .bar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+#lb .stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;position:relative;touch-action:pan-y}
+#lb img{max-width:100%;max-height:100%;object-fit:contain}
+#lb .pn{position:absolute;top:50%;translate:0 -50%;width:44px;height:44px;border-radius:50%;background:#0008;font-size:22px}
+#lb .p{right:8px}#lb .n{left:8px}
+#lb .dlb{margin:10px auto 0;padding:12px 30px;background:var(--ac);color:#000;border-radius:999px;font-weight:700;font-size:17px}
+#toast{position:fixed;left:50%;bottom:90px;translate:-50% 0;background:#222;color:#fff;padding:10px 18px;border-radius:12px;z-index:30;opacity:0;transition:.2s;pointer-events:none}
+#toast.on{opacity:1}
+#lb .cnt{text-align:center;color:var(--mut);padding:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <button class="ib" id="menu" aria-label="القائمة"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+  <h1 id="title"></h1>
+  <button class="ib" id="lgb" aria-label="اللغة"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/></svg></button>
+  <button class="ib" id="home" aria-label="الرئيسية"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linejoin="round"><path d="M4 10.5 12 3l8 7.5V21H4z"/></svg></button>
+</header>
+<div class="scrim" id="scrim"></div>
+<div id="lg" role="dialog" aria-modal="true"><div class="box"><div class="lh"><b id="lgt"></b><button class="ib" id="lgx">✕</button></div><div class="lgrid" id="lgrid"></div></div></div>
+<nav class="nav" id="nav" aria-label="الصفحات"><h3>Instagram Photos</h3></nav>
+<main id="view"></main>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="lb" role="dialog" aria-modal="true">
+  <div class="bar">
+    <button class="ib" id="x" aria-label="إغلاق">✕</button>
+    <span>
+      <button class="ib" id="sh" aria-label="مشاركة">⤴</button>
+    </span>
+  </div>
+  <div class="stage">
+    <button class="pn p" id="prev" aria-label="السابق">›</button>
+    <img id="big" alt="">
+    <button class="pn n" id="next" aria-label="التالي">‹</button>
+  </div>
+  <button id="dl" class="dlb">⬇ تحميل الصورة</button>
+  <div class="cnt" id="cnt"></div>
+</div>
+
+<script>
+/* ===== الإعدادات: عدّل هنا =====
+   حط صورك في مجلد images جنب index.html وكتب أسماءها في images.
+   لو images فاضية، هتظهر صور تجريبية ملونة. */
+const HERO="images/cover-hero.jpg";
+const INSTA="images/cover-insta.jpg";
+const ANIME="images/cover-anime.jpg";
+const LOVE="images/cover-love.jpg";
+const STICK="images/cover-stick.jpg";
+const NEON="images/cover-neon.jpg";
+const INSTA_PICS=[
+"images/insta-001.jpg",
+"images/insta-002.jpg",
+"images/insta-003.jpg",
+"images/insta-004.jpg",
+"images/insta-005.jpg",
+"images/insta-006.jpg",
+"images/insta-007.jpg",
+"images/insta-008.jpg",
+"images/insta-009.jpg",
+"images/insta-010.jpg",
+"images/insta-011.jpg",
+"images/insta-012.jpg",
+"images/insta-013.jpg",
+"images/insta-014.jpg",
+"images/insta-015.jpg",
+"images/insta-016.jpg",
+"images/insta-017.jpg",
+"images/insta-018.jpg",
+"images/insta-019.jpg",
+"images/insta-020.jpg",
+"images/insta-021.jpg",
+"images/insta-022.jpg",
+"images/insta-023.jpg",
+"images/insta-024.jpg",
+"images/insta-025.jpg",
+"images/insta-026.jpg",
+"images/insta-027.jpg",
+"images/insta-028.jpg",
+"images/insta-029.jpg",
+"images/insta-030.jpg",
+"images/insta-031.jpg",
+"images/insta-032.jpg",
+"images/insta-033.jpg",
+"images/insta-034.jpg",
+"images/insta-035.jpg",
+"images/insta-036.jpg",
+"images/insta-037.jpg",
+"images/insta-038.jpg",
+"images/insta-039.jpg",
+"images/insta-040.jpg",
+"images/insta-041.jpg",
+"images/insta-042.jpg",
+"images/insta-043.jpg",
+"images/insta-044.jpg",
+"images/insta-045.jpg",
+"images/insta-046.jpg",
+"images/insta-047.jpg",
+"images/insta-048.jpg",
+"images/insta-049.jpg",
+"images/insta-050.jpg",
+"images/insta-051.jpg",
+"images/insta-052.jpg",
+"images/insta-053.jpg",
+"images/insta-054.jpg",
+"images/insta-055.jpg",
+"images/insta-056.jpg",
+"images/insta-057.jpg",
+"images/insta-058.jpg",
+"images/insta-059.jpg",
+"images/insta-060.jpg",
+"images/insta-061.jpg",
+"images/insta-062.jpg",
+"images/insta-063.jpg",
+"images/insta-064.jpg",
+"images/insta-065.jpg",
+"images/insta-066.jpg",
+"images/insta-067.jpg",
+"images/insta-068.jpg",
+"images/insta-069.jpg",
+"images/insta-070.jpg",
+"images/insta-071.jpg",
+"images/insta-072.jpg",
+"images/insta-073.jpg",
+"images/insta-074.jpg",
+"images/insta-075.jpg",
+"images/insta-076.jpg",
+"images/insta-077.jpg",
+"images/insta-078.jpg",
+"images/insta-079.jpg",
+"images/insta-080.jpg",
+"images/insta-081.jpg",
+"images/insta-082.jpg",
+"images/insta-083.jpg",
+"images/insta-084.jpg",
+"images/insta-085.jpg",
+"images/insta-086.jpg",
+"images/insta-087.jpg",
+"images/insta-088.jpg",
+"images/insta-089.jpg",
+"images/insta-090.jpg",
+"images/insta-091.jpg",
+"images/insta-092.jpg",
+"images/insta-093.jpg",
+"images/insta-094.jpg",
+"images/insta-095.jpg",
+"images/insta-096.jpg",
+"images/insta-097.jpg",
+"images/insta-098.jpg",
+"images/insta-099.jpg",
+"images/insta-100.jpg",
+"images/insta-101.jpg",
+"images/insta-102.jpg",
+"images/insta-103.jpg",
+"images/insta-104.jpg",
+"images/insta-105.jpg",
+"images/insta-106.jpg",
+"images/insta-107.jpg",
+"images/insta-108.jpg",
+"images/insta-109.jpg",
+"images/insta-110.jpg",
+"images/insta-111.jpg",
+"images/insta-112.jpg",
+"images/insta-113.jpg",
+"images/insta-114.jpg",
+"images/insta-115.jpg",
+"images/insta-116.jpg",
+"images/insta-117.jpg"
+];
+const ANIME_PICS=[
+"images/anime-001.jpg",
+"images/anime-002.jpg",
+"images/anime-003.jpg",
+"images/anime-004.jpg",
+"images/anime-005.jpg",
+"images/anime-006.jpg",
+"images/anime-007.jpg",
+"images/anime-008.jpg",
+"images/anime-009.jpg",
+"images/anime-010.jpg",
+"images/anime-011.jpg",
+"images/anime-012.jpg",
+"images/anime-013.jpg",
+"images/anime-014.jpg",
+"images/anime-015.jpg",
+"images/anime-016.jpg",
+"images/anime-017.jpg",
+"images/anime-018.jpg",
+"images/anime-019.jpg",
+"images/anime-020.jpg",
+"images/anime-021.jpg",
+"images/anime-022.jpg",
+"images/anime-023.jpg",
+"images/anime-024.jpg",
+"images/anime-025.jpg",
+"images/anime-026.jpg",
+"images/anime-027.jpg",
+"images/anime-028.jpg",
+"images/anime-029.jpg",
+"images/anime-030.jpg",
+"images/anime-031.jpg",
+"images/anime-032.jpg",
+"images/anime-033.jpg",
+"images/anime-034.jpg",
+"images/anime-035.jpg",
+"images/anime-036.jpg",
+"images/anime-037.jpg",
+"images/anime-038.jpg",
+"images/anime-039.jpg",
+"images/anime-040.jpg",
+"images/anime-041.jpg",
+"images/anime-042.jpg",
+"images/anime-043.jpg",
+"images/anime-044.jpg",
+"images/anime-045.jpg",
+"images/anime-046.jpg",
+"images/anime-047.jpg",
+"images/anime-048.jpg",
+"images/anime-049.jpg",
+"images/anime-050.jpg",
+"images/anime-051.jpg",
+"images/anime-052.jpg",
+"images/anime-053.jpg",
+"images/anime-054.jpg",
+"images/anime-055.jpg",
+"images/anime-056.jpg",
+"images/anime-057.jpg",
+"images/anime-058.jpg",
+"images/anime-059.jpg",
+"images/anime-060.jpg",
+"images/anime-061.jpg",
+"images/anime-062.jpg",
+"images/anime-063.jpg",
+"images/anime-064.jpg",
+"images/anime-065.jpg",
+"images/anime-066.jpg",
+"images/anime-067.jpg",
+"images/anime-068.jpg",
+"images/anime-069.jpg",
+"images/anime-070.jpg",
+"images/anime-071.jpg",
+"images/anime-072.jpg",
+"images/anime-073.jpg",
+"images/anime-074.jpg",
+"images/anime-075.jpg",
+"images/anime-076.jpg",
+"images/anime-077.jpg",
+"images/anime-078.jpg",
+"images/anime-079.jpg",
+"images/anime-080.jpg",
+"images/anime-081.jpg",
+"images/anime-082.jpg",
+"images/anime-083.jpg"
+];
+const LOVE_PICS=[
+"images/love-001.jpg",
+"images/love-002.jpg",
+"images/love-003.jpg",
+"images/love-004.jpg",
+"images/love-005.jpg",
+"images/love-006.jpg",
+"images/love-007.jpg",
+"images/love-008.jpg",
+"images/love-009.jpg",
+"images/love-010.jpg",
+"images/love-011.jpg",
+"images/love-012.jpg",
+"images/love-013.jpg",
+"images/love-014.jpg",
+"images/love-015.jpg",
+"images/love-016.jpg",
+"images/love-017.jpg",
+"images/love-018.jpg",
+"images/love-019.jpg",
+"images/love-020.jpg",
+"images/love-021.jpg",
+"images/love-022.jpg",
+"images/love-023.jpg",
+"images/love-024.jpg",
+"images/love-025.jpg",
+"images/love-026.jpg",
+"images/love-027.jpg",
+"images/love-028.jpg",
+"images/love-029.jpg",
+"images/love-030.jpg",
+"images/love-031.jpg",
+"images/love-032.jpg",
+"images/love-033.jpg",
+"images/love-034.jpg"
+];
+const NEON_PICS=[
+"images/neon-001.jpg",
+"images/neon-002.jpg",
+"images/neon-003.jpg",
+"images/neon-004.jpg",
+"images/neon-005.jpg",
+"images/neon-006.jpg",
+"images/neon-007.jpg",
+"images/neon-008.jpg",
+"images/neon-009.jpg",
+"images/neon-010.jpg",
+"images/neon-011.jpg",
+"images/neon-012.jpg",
+"images/neon-013.jpg",
+"images/neon-014.jpg",
+"images/neon-015.jpg",
+"images/neon-016.jpg",
+"images/neon-017.jpg",
+"images/neon-018.jpg",
+"images/neon-019.jpg",
+"images/neon-020.jpg",
+"images/neon-021.jpg",
+"images/neon-022.jpg",
+"images/neon-023.jpg",
+"images/neon-024.jpg",
+"images/neon-025.jpg",
+"images/neon-026.jpg",
+"images/neon-027.jpg",
+"images/neon-028.jpg",
+"images/neon-029.jpg",
+"images/neon-030.jpg",
+"images/neon-031.jpg",
+"images/neon-032.jpg",
+"images/neon-033.jpg",
+"images/neon-034.jpg",
+"images/neon-035.jpg",
+"images/neon-036.jpg",
+"images/neon-037.jpg",
+"images/neon-038.jpg",
+"images/neon-039.jpg",
+"images/neon-040.jpg",
+"images/neon-041.jpg",
+"images/neon-042.jpg",
+"images/neon-043.jpg",
+"images/neon-044.jpg",
+"images/neon-045.jpg",
+"images/neon-046.jpg",
+"images/neon-047.jpg",
+"images/neon-048.jpg",
+"images/neon-049.jpg",
+"images/neon-050.jpg",
+"images/neon-051.jpg",
+"images/neon-052.jpg",
+"images/neon-053.jpg",
+"images/neon-054.jpg",
+"images/neon-055.jpg",
+"images/neon-056.jpg",
+"images/neon-057.jpg",
+"images/neon-058.jpg",
+"images/neon-059.jpg",
+"images/neon-060.jpg",
+"images/neon-061.jpg",
+"images/neon-062.jpg",
+"images/neon-063.jpg",
+"images/neon-064.jpg",
+"images/neon-065.jpg",
+"images/neon-066.jpg",
+"images/neon-067.jpg",
+"images/neon-068.jpg"
+];
+const STICK_PICS=[
+"images/stick-001.jpg",
+"images/stick-002.jpg",
+"images/stick-003.jpg",
+"images/stick-004.jpg",
+"images/stick-005.jpg",
+"images/stick-006.jpg",
+"images/stick-007.jpg",
+"images/stick-008.jpg",
+"images/stick-009.jpg",
+"images/stick-010.jpg",
+"images/stick-011.jpg",
+"images/stick-012.jpg",
+"images/stick-013.jpg",
+"images/stick-014.jpg",
+"images/stick-015.jpg",
+"images/stick-016.jpg",
+"images/stick-017.jpg",
+"images/stick-018.jpg",
+"images/stick-019.jpg",
+"images/stick-020.jpg",
+"images/stick-021.jpg",
+"images/stick-022.jpg",
+"images/stick-023.jpg",
+"images/stick-024.jpg",
+"images/stick-025.jpg",
+"images/stick-026.jpg",
+"images/stick-027.jpg",
+"images/stick-028.jpg",
+"images/stick-029.jpg",
+"images/stick-030.jpg",
+"images/stick-031.jpg",
+"images/stick-032.jpg",
+"images/stick-033.png",
+"images/stick-034.jpg",
+"images/stick-035.jpg",
+"images/stick-036.jpg",
+"images/stick-037.jpg",
+"images/stick-038.jpg",
+"images/stick-039.jpg",
+"images/stick-040.jpg",
+"images/stick-041.jpg",
+"images/stick-042.jpg",
+"images/stick-043.jpg",
+"images/stick-044.jpg",
+"images/stick-045.jpg",
+"images/stick-046.jpg",
+"images/stick-047.jpg",
+"images/stick-048.jpg",
+"images/stick-049.jpg",
+"images/stick-050.jpg",
+"images/stick-051.jpg",
+"images/stick-052.jpg"
+];
+const APP = {
+  home: { title: "Photos 2027", heading: "Photos 2027", sub: "Instagram Photos" },
+  pages: [
+    { title: "Instagram photos 💜",   cover: INSTA, pos: "center 48%", images: INSTA_PICS },
+    { title: "صور انمي 2027☔",       cover: ANIME, pos: "center 28%", images: ANIME_PICS },
+    { title: "صور love♥",             cover: LOVE, pos: "center 55%", images: LOVE_PICS },
+    { title: "صور نيون💥",            cover: NEON, pos: "center 35%", images: NEON_PICS },
+    { title: "WhatsApp stickers 📎",  cover: STICK, pos: "center 45%", images: STICK_PICS }
+  ]
+};
+/* =============================== */
+
+const SHARE_URL="https://dapyovip1-design.github.io/photoss2027/";
+const LK=["menu","home","close","share","prev","next","pages","dl","ig","lang","anime","love","neon","copied","saved"];
+const LGR=[
+["ar","العربية",1,"القائمة","الرئيسية","إغلاق","مشاركة","السابق","التالي","الصفحات","تحميل الصورة","تواصل معنا عبر الأنستغرام","اللغة","صور انمي","صور love","صور نيون","تم نسخ الرابط","تم حفظ الصورة في المعرض"],
+["en","English",0,"Menu","Home","Close","Share","Previous","Next","Pages","Download photo","Contact us on Instagram","Language","Anime photos","Love photos","Neon photos","Link copied","Photo saved to gallery"],
+["fr","Français",0,"Menu","Accueil","Fermer","Partager","Précédent","Suivant","Pages","Télécharger la photo","Contactez-nous sur Instagram","Langue","Photos d'anime","Photos d'amour","Photos néon","Lien copié","Photo enregistrée dans la galerie"],
+["es","Español",0,"Menú","Inicio","Cerrar","Compartir","Anterior","Siguiente","Páginas","Descargar foto","Contáctanos en Instagram","Idioma","Fotos de anime","Fotos de amor","Fotos neón","Enlace copiado","Foto guardada en la galería"],
+["de","Deutsch",0,"Menü","Startseite","Schließen","Teilen","Zurück","Weiter","Seiten","Foto herunterladen","Kontaktiere uns auf Instagram","Sprache","Anime-Fotos","Liebesfotos","Neon-Fotos","Link kopiert","Foto in der Galerie gespeichert"],
+["it","Italiano",0,"Menu","Home","Chiudi","Condividi","Precedente","Successivo","Pagine","Scarica la foto","Contattaci su Instagram","Lingua","Foto anime","Foto d'amore","Foto neon","Link copiato","Foto salvata nella galleria"],
+["pt","Português",0,"Menu","Início","Fechar","Compartilhar","Anterior","Próxima","Páginas","Baixar foto","Fale conosco no Instagram","Idioma","Fotos de anime","Fotos de amor","Fotos neon","Link copiado","Foto salva na galeria"],
+["ru","Русский",0,"Меню","Главная","Закрыть","Поделиться","Назад","Далее","Страницы","Скачать фото","Свяжитесь с нами в Instagram","Язык","Фото аниме","Фото о любви","Неоновые фото","Ссылка скопирована","Фото сохранено в галерее"],
+["tr","Türkçe",0,"Menü","Ana sayfa","Kapat","Paylaş","Önceki","Sonraki","Sayfalar","Fotoğrafı indir","Bize Instagram'dan ulaşın","Dil","Anime fotoğrafları","Aşk fotoğrafları","Neon fotoğraflar","Bağlantı kopyalandı","Fotoğraf galeriye kaydedildi"],
+["fa","فارسی",1,"منو","خانه","بستن","اشتراک‌گذاری","قبلی","بعدی","صفحه‌ها","دانلود عکس","با ما در اینستاگرام در تماس باشید","زبان","عکس‌های انیمه","عکس‌های عاشقانه","عکس‌های نئونی","پیوند کپی شد","عکس در گالری ذخیره شد"],
+["ur","اردو",1,"مینو","ہوم","بند کریں","شیئر کریں","پچھلا","اگلا","صفحات","تصویر ڈاؤن لوڈ کریں","انسٹاگرام پر ہم سے رابطہ کریں","زبان","اینیمی تصاویر","محبت کی تصاویر","نیون تصاویر","لنک کاپی ہو گیا","تصویر گیلری میں محفوظ ہو گئی"],
+["he","עברית",1,"תפריט","בית","סגירה","שיתוף","הקודם","הבא","דפים","הורדת תמונה","צרו קשר באינסטגרם","שפה","תמונות אנימה","תמונות אהבה","תמונות ניאון","הקישור הועתק","התמונה נשמרה בגלריה"],
+["hi","हिन्दी",0,"मेनू","होम","बंद करें","साझा करें","पिछला","अगला","पृष्ठ","फ़ोटो डाउनलोड करें","इंस्टाग्राम पर हमसे संपर्क करें","भाषा","एनीमे फ़ोटो","लव फ़ोटो","नियॉन फ़ोटो","लिंक कॉपी हो गया","फ़ोटो गैलरी में सहेजी गई"],
+["bn","বাংলা",0,"মেনু","হোম","বন্ধ করুন","শেয়ার করুন","আগের","পরের","পৃষ্ঠা","ছবি ডাউনলোড করুন","ইনস্টাগ্রামে আমাদের সাথে যোগাযোগ করুন","ভাষা","অ্যানিমে ছবি","লাভ ছবি","নিয়ন ছবি","লিঙ্ক কপি হয়েছে","ছবি গ্যালারিতে সংরক্ষিত হয়েছে"],
+["id","Bahasa Indonesia",0,"Menu","Beranda","Tutup","Bagikan","Sebelumnya","Berikutnya","Halaman","Unduh foto","Hubungi kami di Instagram","Bahasa","Foto anime","Foto cinta","Foto neon","Tautan disalin","Foto disimpan ke galeri"],
+["ms","Bahasa Melayu",0,"Menu","Laman utama","Tutup","Kongsi","Sebelumnya","Seterusnya","Halaman","Muat turun foto","Hubungi kami di Instagram","Bahasa","Foto anime","Foto cinta","Foto neon","Pautan disalin","Foto disimpan ke galeri"],
+["zh","中文",0,"菜单","首页","关闭","分享","上一张","下一张","页面","下载图片","通过 Instagram 联系我们","语言","动漫图片","爱情图片","霓虹图片","链接已复制","图片已保存到相册"],
+["ja","日本語",0,"メニュー","ホーム","閉じる","共有","前へ","次へ","ページ","写真をダウンロード","Instagramでお問い合わせ","言語","アニメ写真","ラブ写真","ネオン写真","リンクをコピーしました","写真をギャラリーに保存しました"],
+["ko","한국어",0,"메뉴","홈","닫기","공유","이전","다음","페이지","사진 다운로드","인스타그램으로 문의하기","언어","애니 사진","러브 사진","네온 사진","링크가 복사되었습니다","사진이 갤러리에 저장되었습니다"],
+["nl","Nederlands",0,"Menu","Home","Sluiten","Delen","Vorige","Volgende","Pagina's","Foto downloaden","Neem contact op via Instagram","Taal","Anime-foto's","Liefdesfoto's","Neonfoto's","Link gekopieerd","Foto opgeslagen in galerij"],
+["pl","Polski",0,"Menu","Strona główna","Zamknij","Udostępnij","Poprzednie","Następne","Strony","Pobierz zdjęcie","Skontaktuj się z nami na Instagramie","Język","Zdjęcia anime","Zdjęcia miłosne","Zdjęcia neonowe","Skopiowano link","Zdjęcie zapisane w galerii"],
+["uk","Українська",0,"Меню","Головна","Закрити","Поділитися","Назад","Далі","Сторінки","Завантажити фото","Зв'яжіться з нами в Instagram","Мова","Фото аніме","Фото про кохання","Неонові фото","Посилання скопійовано","Фото збережено в галереї"],
+["sv","Svenska",0,"Meny","Hem","Stäng","Dela","Föregående","Nästa","Sidor","Ladda ner foto","Kontakta oss på Instagram","Språk","Animebilder","Kärleksbilder","Neonbilder","Länk kopierad","Fotot sparades i galleriet"],
+["el","Ελληνικά",0,"Μενού","Αρχική","Κλείσιμο","Κοινοποίηση","Προηγούμενο","Επόμενο","Σελίδες","Λήψη φωτογραφίας","Επικοινωνήστε μαζί μας στο Instagram","Γλώσσα","Φωτογραφίες anime","Φωτογραφίες αγάπης","Φωτογραφίες neon","Ο σύνδεσμος αντιγράφηκε","Η φωτογραφία αποθηκεύτηκε στη συλλογή"],
+["th","ไทย",0,"เมนู","หน้าแรก","ปิด","แชร์","ก่อนหน้า","ถัดไป","หน้า","ดาวน์โหลดรูปภาพ","ติดต่อเราทาง Instagram","ภาษา","ภาพอนิเมะ","ภาพความรัก","ภาพนีออน","คัดลอกลิงก์แล้ว","บันทึกรูปภาพลงในแกลเลอรีแล้ว"],
+["vi","Tiếng Việt",0,"Menu","Trang chủ","Đóng","Chia sẻ","Trước","Tiếp","Các trang","Tải ảnh xuống","Liên hệ với chúng tôi qua Instagram","Ngôn ngữ","Ảnh anime","Ảnh tình yêu","Ảnh neon","Đã sao chép liên kết","Đã lưu ảnh vào thư viện"],
+["sw","Kiswahili",0,"Menyu","Mwanzo","Funga","Shiriki","Iliyotangulia","Inayofuata","Kurasa","Pakua picha","Wasiliana nasi kupitia Instagram","Lugha","Picha za anime","Picha za mapenzi","Picha za neon","Kiungo kimenakiliwa","Picha imehifadhiwa kwenye ghala"]
+];
+const LG={}; LGR.forEach(r=>{const o={name:r[1],rtl:r[2]}; LK.forEach((k,i)=>o[k]=r[3+i]); LG[r[0]]=o;});
+const L=()=>LG[lang]||LG.ar;
+const pt=i=>{const t=L();return ["Instagram photos 💜",t.anime+" 2027☔",t.love+"♥",t.neon+"💥","WhatsApp stickers 📎"][i]};
+function buildLangList(){
+  const g=$("lgrid"); g.innerHTML="";
+  LGR.forEach(r=>{
+    const b=document.createElement("button"); b.textContent=r[1]; b.lang=r[0]; b.dir=r[2]?"rtl":"ltr";
+    if(r[0]===lang)b.className="on";
+    b.onclick=()=>{applyLang(r[0]);$("lg").classList.remove("show")}; g.appendChild(b);
+  });
+}
+function applyLang(c){
+  if(!LG[c])c="ar"; lang=c; const t=L(), d=document.documentElement;
+  d.lang=c; d.dir=t.rtl?"rtl":"ltr";
+  $("menu").setAttribute("aria-label",t.menu); $("home").setAttribute("aria-label",t.home);
+  $("x").setAttribute("aria-label",t.close); $("lgx").setAttribute("aria-label",t.close);
+  $("sh").setAttribute("aria-label",t.share); $("prev").setAttribute("aria-label",t.prev);
+  $("next").setAttribute("aria-label",t.next); $("nav").setAttribute("aria-label",t.pages);
+  $("lgb").setAttribute("aria-label",t.lang); $("lgt").textContent="🌐 "+t.lang;
+  $("dl").textContent="⬇ "+t.dl;
+  $("prev").textContent=t.rtl?"›":"‹"; $("next").textContent=t.rtl?"‹":"›";
+  try{localStorage.setItem("lang",c)}catch(e){}
+  buildLangList(); go(cur);
+}
+let lang="ar", cur=-1, list=[], idx=0;
+const $=id=>document.getElementById(id);
+
+function ph(i,k){ // صورة تجريبية
+  const h=(k*70+i*23)%360;
+  const s=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h},70%,55%)"/><stop offset="1" stop-color="hsl(${(h+60)%360},70%,25%)"/></linearGradient></defs><rect width="600" height="800" fill="url(#g)"/><text x="300" y="420" font-size="90" text-anchor="middle" fill="#fff8" font-family="sans-serif">${i+1}</text></svg>`;
+  return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
+}
+APP.pages.forEach((p,k)=>{ if(!p.images.length) p.images=Array.from({length:24},(_,i)=>ph(i,k)); });
+
+function buildNav(){
+  const n=$("nav"); n.querySelectorAll("a").forEach(a=>a.remove());
+  [[-1,APP.home.title],...APP.pages.map((p,i)=>[i,pt(i)])].forEach(([i,t])=>{
+    const a=document.createElement("a"); a.href="#"; a.textContent=t;
+    if(i===cur)a.className="on";
+    a.onclick=e=>{e.preventDefault();go(i)}; n.appendChild(a);
+  });
+  const ig=document.createElement("a"); ig.className="ig";
+  ig.href="https://www.instagram.com/dowpe_1?stkn=Y3JlZTl5MDgxZ3I4"; ig.target="_blank"; ig.rel="noopener noreferrer";
+  ig.innerHTML='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg><span>'+L().ig+'</span>';
+  ig.onclick=e=>{
+    if(!/Android/i.test(navigator.userAgent))return;
+    e.preventDefault();
+    const web=ig.href; let done=false;
+    const stop=()=>{done=true}, vis=()=>{if(document.hidden)stop()};
+    document.addEventListener("visibilitychange",vis);
+    addEventListener("pagehide",stop,{once:true}); addEventListener("blur",stop,{once:true});
+    const f=document.createElement("iframe"); f.style.display="none";
+    f.src="instagram://user?username=dowpe_1"; document.body.appendChild(f);
+    setTimeout(()=>{
+      f.remove(); document.removeEventListener("visibilitychange",vis);
+      if(done||document.hidden)return;
+      const w=window.open(web,"_blank"); if(w){try{w.opener=null}catch(_){}}else location.assign(web);
+    },1600);
+  };
+  n.appendChild(ig);
+}
+function go(i){
+  cur=i; document.body.classList.remove("open"); window.scrollTo(0,0);
+  const v=$("view"); v.innerHTML="";
+  if(i<0){
+    $("title").textContent=APP.home.title;
+    v.innerHTML=`<div class="hero" style="background-image:linear-gradient(#0000 45%,#000b),url(${HERO})"><h2>${APP.home.heading}</h2><p>${APP.home.sub}</p></div><div class="tiles"></div>`;
+    APP.pages.forEach((p,k)=>{
+      const b=document.createElement("button"); b.className="tile";
+      b.innerHTML=(p.cover?`<img src="${p.cover}" style="object-position:${p.pos||"center 30%"}" alt="">`:"")+`<span>${pt(k)}</span>`;
+      b.onclick=()=>go(k); v.querySelector(".tiles").appendChild(b);
+    });
+  } else {
+    const p=APP.pages[i]; $("title").textContent=pt(i);
+    const g=document.createElement("div"); g.className="grid gal";
+    p.images.forEach((src,j)=>{
+      const b=document.createElement("button"); b.setAttribute("aria-label",(j+1)+"");
+      b.innerHTML=`<img loading="lazy" src="${src}" alt="">`; b.onclick=()=>open(p.images,j); g.appendChild(b);
+    });
+    v.appendChild(g);
+  }
+  buildNav();
+}
+function open(l,i){list=l;idx=i;show();$("lb").classList.add("show")}
+function show(){$("big").src=list[idx];$("cnt").textContent=(idx+1)+" / "+list.length}
+function step(d){idx=(idx+d+list.length)%list.length;show()}
+$("menu").onclick=()=>document.body.classList.add("open");
+$("home").onclick=()=>go(-1);
+$("scrim").onclick=()=>document.body.classList.remove("open");
+$("x").onclick=()=>$("lb").classList.remove("show");
+$("prev").onclick=()=>step(-1); $("next").onclick=()=>step(1);
+$("dl").onclick=()=>{
+  const a=document.createElement("a");
+  a.href=list[idx]; a.download=list[idx].split("/").pop();
+  document.body.appendChild(a); a.click(); a.remove();
+};
+function toast(m){const e=$("toast");e.textContent=m;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),2200)}
+async function copyLink(u){
+  try{await navigator.clipboard.writeText(u);return true}catch(e){}
+  try{const a=document.createElement("textarea");a.value=u;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();const ok=document.execCommand("copy");a.remove();return ok}catch(e){return false}
+}
+$("sh").onclick=async()=>{
+  const url=SHARE_URL, title=$("title").textContent;
+  if(navigator.share){try{await navigator.share({title,url})}catch(e){} return}
+  if(/Android/i.test(navigator.userAgent)){
+    let done=false; const stop=()=>{done=true};
+    document.addEventListener("visibilitychange",()=>{if(document.hidden)stop()},{once:true});
+    addEventListener("pagehide",stop,{once:true}); addEventListener("blur",stop,{once:true});
+    const f=document.createElement("iframe"); f.style.display="none";
+    f.src="intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT="+encodeURIComponent(title+"\n"+url)+";end";
+    document.body.appendChild(f);
+    await new Promise(r=>setTimeout(r,1200)); f.remove();
+    if(done||document.hidden)return;
+  }
+  if(await copyLink(url))toast(L().copied);
+};
+document.addEventListener("keydown",e=>{if(!$("lb").classList.contains("show"))return;
+  if(e.key==="Escape")$("x").click(); const r=document.documentElement.dir==="rtl"; if(e.key==="ArrowLeft")step(r?1:-1); if(e.key==="ArrowRight")step(r?-1:1)});
+let sx=null; const st=document.querySelector("#lb .stage");
+st.addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});
+st.addEventListener("touchend",e=>{if(sx===null)return;const d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>50)step(d<0?1:-1);sx=null});
+$("lgb").onclick=()=>$("lg").classList.add("show");
+$("lgx").onclick=()=>$("lg").classList.remove("show");
+$("lg").addEventListener("click",e=>{if(e.target===$("lg"))$("lg").classList.remove("show")});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("lg").classList.remove("show")});
+let saved="ar"; try{saved=localStorage.getItem("lang")||"ar"}catch(e){}
+applyLang(saved);
+</script>
+</body>
+</html>
