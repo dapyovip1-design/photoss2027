@@ -1,0 +1,35 @@
+name: Extract images
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unzip images
+        run: |
+          test -f images.zip || { echo "::error::images.zip not found in the repo root"; exit 1; }
+          unzip -oq images.zip
+          rm images.zip
+          echo "Files in images/: $(ls images | wc -l)"
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add images" || { echo "Nothing to commit"; exit 0; }
+          git push
+
+      - name: Rebuild Pages
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
